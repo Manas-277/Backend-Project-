@@ -1,5 +1,6 @@
 import mongoose, {Schema} from 'mongoose'
 import jwt from 'jsonwebtoken'
+import bcrypt from 'bcrypt'
 
 const userSchema = new Schema({
     username:{
@@ -17,7 +18,7 @@ const userSchema = new Schema({
         lowercase: true,
         trim: true
     },
-    fullname:{
+    fullName:{
         type: String,
         required: true,
         lowercase: true,
@@ -51,7 +52,7 @@ const userSchema = new Schema({
 //pre is a middleware used just before saving or any operation from the DB
 userSchema.pre("save", async function(next){
     if(!this.isModified("password")) return next();
-    this.password = bcrypt.hash(this.password, 10)
+    this.password = await bcrypt.hash(this.password, 10)
     next()
 } ) //dont use arroy function here because we need reference here
 
@@ -90,4 +91,4 @@ userSchema.methods.generateRefreshToken = function(){
 )
 }
 userSchema.methods.generateRefreshToken = function(){}
-export const User = mongoose.model("User", userSchema); 
+export const User = mongoose.model("User", userSchema)
